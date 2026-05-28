@@ -5,8 +5,8 @@ int main(void)
 	mini_printk_init();
 
 	mini_printk(MINI_LOG_INFO, "mini kernel simulator start");
-	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk rint buffer");
-	mini_printk(MINI_LOG_WARN, "this is a warning ring buffer");
+	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk ring buffer");
+	mini_printk(MINI_LOG_WARN, "this is a warning message");
 	mini_printk(MINI_LOG_ERROR, "this is an error message");
 
 	mini_printk(MINI_LOG_INFO, "test log 1");
