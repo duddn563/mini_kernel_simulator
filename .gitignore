@@ -1,0 +1,10 @@
+# Build output
+mini_kernel_simulator
+*.o
+
+# Editor backup files
+*~
+*.swp
+
+# OS files
+.DS_store
