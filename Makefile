@@ -3,7 +3,8 @@ CFLAGS = -Wall -Wextra -Iinclude
 TARGET = mini_kernel_simulator
 
 SRC = src/main.c \
-			src/mini_printk.c
+			src/mini_printk.c \
+			src/mini_task.c
 
 OBJ = $(SRC:.c=.o)
 
