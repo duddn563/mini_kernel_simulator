@@ -45,7 +45,7 @@ mini_task_t *mini_task_create(int pid, const char *name, mini_task_state_t state
 	new_task->next = NULL;
 
 	mini_printk(MINI_LOG_INFO, 
-							"task create: pid=%d, name=%s, state=%s",
+							"task created: pid=%d, name=%s, state=%s",
 							new_task->pid,
 							new_task->name,
 							mini_task_state_to_string(new_task->state));

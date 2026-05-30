@@ -18,9 +18,9 @@ int main(void)
   mini_printk(MINI_LOG_INFO, "mini kernel simulator start");
 	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk ring buffer");
 
-	init_task = mini_task_create(1, "init", MINI_TASK_RUNNING);
+	init_task = mini_task_create(1, "init", MINI_TASK_READY);
 	worker_task = mini_task_create(2, "worker", MINI_TASK_READY);
-	logger_task = mini_task_create(3, "logger", MINI_TASK_SLEEPING);
+	logger_task = mini_task_create(3, "logger", MINI_TASK_READY);
 
 	mini_task_add(init_task);
 	mini_task_add(worker_task);
