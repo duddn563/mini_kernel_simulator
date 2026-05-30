@@ -129,3 +129,8 @@ void mini_task_destroy_all(void)
 
 	task_head = NULL;
 }
+
+mini_task_t *mini_task_get_head(void)
+{
+	return task_head;
+}

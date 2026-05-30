@@ -1,5 +1,6 @@
 #include "mini_printk.h"
 #include "mini_task.h"
+#include "mini_scheduler.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -26,6 +27,9 @@ int main(void)
 	mini_task_add(logger_task);
 
 	mini_task_show_all();
+
+	mini_scheduler_init(mini_task_get_head());
+	mini_scheduler_run_rounds(6);
 
 	mini_printk_show_logs();
 

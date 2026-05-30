@@ -22,5 +22,6 @@ mini_task_t *mini_task_create(int pid, const char *name, mini_task_state_t state
 void mini_task_add(mini_task_t *new_task);
 void mini_task_show_all(void);
 void mini_task_destroy_all(void);
+mini_task_t *mini_task_get_head(void);
 
 #endif
