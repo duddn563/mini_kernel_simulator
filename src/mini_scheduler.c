@@ -33,7 +33,7 @@ void mini_scheduler_run_once(void)
 	scheduler_current_task->state = MINI_TASK_RUNNING;
 
 	mini_printk(MINI_LOG_INFO,
-							"scheduler running task: pid%d, name=%s",
+							"scheduler running task: pid=%d, name=%s",
 							scheduler_current_task->pid,
 							scheduler_current_task->name);
 
