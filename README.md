@@ -64,18 +64,22 @@ Implemented:
 ## Project Structure
 
 ```text
+
 mini_kernel_simulator/
 ├── Makefile
 ├── README.md
-├── docs/
-│   ├── 01_mini_printk.md
-│   └── 02_mini_task.md
-├── include/
-│   ├── mini_printk.h
-│   └── mini_task.h
-└── src/
+├── docs
+│   ├── 01_mini_printk.md
+│   ├── 02_mini_task.md
+│   └── 03_mini_scheduler.md
+├── include
+│   ├── mini_printk.h
+│   ├── mini_scheduler.h
+│   └── mini_task.h
+└── src
     ├── main.c
     ├── mini_printk.c
+    ├── mini_scheduler.c
     └── mini_task.c
 ```
 
