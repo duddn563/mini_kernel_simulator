@@ -48,6 +48,19 @@ Implemented:
 * structure layout experiment using `sizeof()` and `offsetof()`
 * array layout and malloc allocation alignment comparison
 
+### v0.3 - mini_scheduler
+
+Implemented:
+
+* simplified round-robin scheduler simulation
+* ready queue setup using `mini_task_t` linked list
+* scheduler current task pointer management
+* sequential task execution using `next` pointer
+* circular scheduler behavior form last task back to head task
+* task state transition during scheduling
+* scheduler execution logging with `mini_printk()`
+* repeated scheduler run using `mini_scheduler_run_rounds()`
+
 ## Project Structure
 
 ```text
@@ -141,6 +154,18 @@ It supports:
 
 This module helps me understand how task-like structures can be represented and connected in memory.
 
+### mini_scheduler
+
+`mini_scheduler` is a simplifed round-robin scheduler simulator module.
+
+It supprots:
+
+* ready queue setup using task linked list
+* current task tracking
+* circular scheduling from the last back to the head task
+* task state trasition
+* scheduler execution logging
+
 ## Memory Layout Experiment
 
 For `mini_task_t`, I checked the structure size and member offsets.
@@ -185,8 +210,8 @@ docs/02_mini_task.md
 * [x] implement mini_task structure
 * [x] implement task linked list
 * [x] document task memory layout experiment
-* [ ] implement simple ready queue
-* [ ] implement round-robin scheduler
+* [x] implement simple ready queue
+* [x] implement round-robin scheduler
 * [ ] implement interrupt handler table
 * [ ] implement character device simulator
 * [ ] compare simple `next` pointer list with Linux kernel `list_head`
