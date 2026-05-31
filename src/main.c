@@ -1,10 +1,21 @@
 #include "mini_printk.h"
 #include "mini_task.h"
 #include "mini_scheduler.h"
+#include "mini_irq.h"
 
-#include <string.h>
 #include <stdio.h>
-#include <stddef.h>
+
+static void timer_irq_handler(int irq)
+{
+	printf("[HANDLER] timer interrupt handler called: irq=%d\n", irq);
+	mini_printk(MINI_LOG_DEBUG, "timer irq handler executed: irq=%d", irq);
+}
+
+static void keyboard_irq_handler(int irq)
+{
+	printf("[HANDLER] keyboard interrupt handler called: irq=%d\n", irq);
+	mini_printk(MINI_LOG_DEBUG, "keyboard irq handler executed: irq=%d", irq);
+}
 
 int main(void)
 {
@@ -14,6 +25,7 @@ int main(void)
 
 	mini_printk_init();
 	mini_task_init();
+	mini_irq_init();
 
   mini_printk(MINI_LOG_INFO, "mini kernel simulator start");
 	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk ring buffer");
@@ -30,6 +42,20 @@ int main(void)
 
 	mini_scheduler_init(mini_task_get_head());
 	mini_scheduler_run_rounds(6);
+
+	mini_request_irq(1, "timer", timer_irq_handler);
+	mini_request_irq(2, "keyboard", keyboard_irq_handler);
+
+	mini_irq_show_table();
+
+	mini_trigger_irq(1);
+	mini_trigger_irq(2);
+	mini_trigger_irq(3);
+	
+	mini_free_irq(1);
+	mini_free_irq(2);
+
+	mini_irq_show_table();
 
 	mini_printk_show_logs();
 
