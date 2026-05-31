@@ -61,23 +61,42 @@ Implemented:
 * scheduler execution logging with `mini_printk()`
 * repeated scheduler run using `mini_scheduler_run_rounds()`
 
+### v0.4 mini_irq
+
+Implemented:
+
+* simplified IRQ handler simulation
+* IRQ descriptor table
+* IRQ handler function pointer
+* IRQ registration using `mini_request_irq()`
+* IRQ triggering using `mini_trigger_irq()`
+* IRQ release using `mini_free_irq()`
+* IRQ table display
+* timer interrupt handler test
+* keyboard interrupt handler test
+* unregistered IRQ warning test
+
+
+
 ## Project Structure
 
 ```text
-
 mini_kernel_simulator/
 ├── Makefile
 ├── README.md
 ├── docs
 │   ├── 01_mini_printk.md
 │   ├── 02_mini_task.md
-│   └── 03_mini_scheduler.md
+│   ├── 03_mini_scheduler.md
+│   └── 04_mini_irq.md
 ├── include
+│   ├── mini_irq.h
 │   ├── mini_printk.h
 │   ├── mini_scheduler.h
 │   └── mini_task.h
 └── src
     ├── main.c
+    ├── mini_irq.c
     ├── mini_printk.c
     ├── mini_scheduler.c
     └── mini_task.c
@@ -170,6 +189,21 @@ It supprots:
 * task state trasition
 * scheduler execution logging
 
+### mini_irq
+
+`mini_irq` is a simplified IRQ handler simulation module.
+
+It supports:
+
+* IRQ descriptor table
+* IRQ handler registration
+* IRQ trigging
+* IRQ release
+* IRQ handler function pointer
+* IRQ table display
+
+This module helps me understand the bagic concept of interrupt handler registration and execution.
+
 ## Memory Layout Experiment
 
 For `mini_task_t`, I checked the structure size and member offsets.
@@ -205,6 +239,8 @@ Detailed notes are available in the `docs/` directory.
 ```text
 docs/01_mini_printk.md
 docs/02_mini_task.md
+docs/03_mini_scheduler.md
+docs/04_mini_irq.md
 ```
 
 ## Roadmap
@@ -216,7 +252,7 @@ docs/02_mini_task.md
 * [x] document task memory layout experiment
 * [x] implement simple ready queue
 * [x] implement round-robin scheduler
-* [ ] implement interrupt handler table
+* [x] implement interrupt handler table
 * [ ] implement character device simulator
 * [ ] compare simple `next` pointer list with Linux kernel `list_head`
 
