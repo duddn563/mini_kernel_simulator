@@ -5,7 +5,8 @@ TARGET = mini_kernel_simulator
 SRC = src/main.c \
 			src/mini_printk.c \
 			src/mini_task.c	\
-			src/mini_scheduler.c
+			src/mini_scheduler.c	\
+			src/mini_irq.c
 
 OBJ = $(SRC:.c=.o)
 
