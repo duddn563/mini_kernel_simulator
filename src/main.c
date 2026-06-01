@@ -2,6 +2,7 @@
 #include "mini_task.h"
 #include "mini_scheduler.h"
 #include "mini_irq.h"
+#include "mini_device.h"
 
 #include <stdio.h>
 
@@ -23,9 +24,13 @@ int main(void)
 	mini_task_t *worker_task = NULL;
 	mini_task_t *logger_task = NULL;
 
+	mini_file_operations_t *device_fops = NULL;
+	char read_buffer[MINI_DEVICE_BUFFER_SIZE];
+
 	mini_printk_init();
 	mini_task_init();
 	mini_irq_init();
+	mini_device_init();
 
   mini_printk(MINI_LOG_INFO, "mini kernel simulator start");
 	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk ring buffer");
@@ -57,7 +62,15 @@ int main(void)
 
 	mini_irq_show_table();
 
+	device_fops = mini_device_get_fops();
+
+	device_fops->open();
+	device_fops->write("hello mini device", 17);
+	device_fops->read(read_buffer, sizeof(read_buffer));
+	device_fops->close();
+
 	mini_printk_show_logs();
+
 
 	mini_task_destroy_all();
 
