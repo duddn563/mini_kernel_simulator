@@ -76,8 +76,6 @@ Implemented:
 * keyboard interrupt handler test
 * unregistered IRQ warning test
 
-
-
 ## Project Structure
 
 ```text
