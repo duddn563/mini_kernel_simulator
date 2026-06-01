@@ -76,6 +76,20 @@ Implemented:
 * keyboard interrupt handler test
 * unregistered IRQ warning test
 
+### v0.5 mini_device
+
+Implemented:
+
+* simplified character device simulation
+* `mini_file_operations_t` structure
+* `open()` operation
+* `write()` operation
+* `read()` operation
+* `close()` operation
+* device buffer storage
+* device open state check
+* device test flow in `main.c`
+
 ## Project Structure
 
 ```text
@@ -86,18 +100,22 @@ mini_kernel_simulator/
 │   ├── 01_mini_printk.md
 │   ├── 02_mini_task.md
 │   ├── 03_mini_scheduler.md
-│   └── 04_mini_irq.md
+│   ├── 04_mini_irq.md
+│   └── 05_mini_device.md
 ├── include
+│   ├── mini_device.h
 │   ├── mini_irq.h
 │   ├── mini_printk.h
 │   ├── mini_scheduler.h
 │   └── mini_task.h
 └── src
     ├── main.c
+    ├── mini_device.c
     ├── mini_irq.c
     ├── mini_printk.c
     ├── mini_scheduler.c
     └── mini_task.c
+
 ```
 
 ## Build & Run
@@ -202,6 +220,22 @@ It supports:
 
 This module helps me understand the bagic concept of interrupt handler registration and execution.
 
+### mini_device
+
+`mini_device` is a simplified character device simulation module.
+
+It supports:
+
+* file operation structure
+* device open
+* device write
+* device read
+* device close
+* device buffer storage
+* device open state check
+
+This module helps me understand the basic concept of Linux character device `file_operations`.
+
 ## Memory Layout Experiment
 
 For `mini_task_t`, I checked the structure size and member offsets.
@@ -239,6 +273,7 @@ docs/01_mini_printk.md
 docs/02_mini_task.md
 docs/03_mini_scheduler.md
 docs/04_mini_irq.md
+docs/05_mini_device.md
 ```
 
 ## Roadmap
@@ -251,7 +286,7 @@ docs/04_mini_irq.md
 * [x] implement simple ready queue
 * [x] implement round-robin scheduler
 * [x] implement interrupt handler table
-* [ ] implement character device simulator
+* [x] implement character device simulator
 * [ ] compare simple `next` pointer list with Linux kernel `list_head`
 
 ## Tech Stack
