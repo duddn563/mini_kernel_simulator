@@ -1,13 +1,13 @@
 #include "mini_task.h"
-#include "mini_printk.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 static mini_task_t *task_head = NULL;
+static mini_list_head_t task_list_head;
 
-static const char *mini_task_state_to_string(mini_task_state_t state)
+const char *mini_task_state_to_string(mini_task_state_t state)
 {
 	switch (state) {
 		case MINI_TASK_READY:
@@ -26,6 +26,7 @@ static const char *mini_task_state_to_string(mini_task_state_t state)
 void mini_task_init(void)
 {
 	task_head = NULL;
+	mini_init_list_head(&task_list_head);
 	mini_printk(MINI_LOG_INFO, "mini_task initialized");
 }
 
@@ -43,6 +44,8 @@ mini_task_t *mini_task_create(int pid, const char *name, mini_task_state_t state
 	snprintf(new_task->name, MINI_TASK_NAME_SIZE, "%s", name);
 	new_task->state = state;
 	new_task->next = NULL;
+
+	mini_list_add_tail(&new_task->task_node, &task_list_head);
 
 	mini_printk(MINI_LOG_INFO, 
 							"task created: pid=%d, name=%s, state=%s",
@@ -109,6 +112,33 @@ void mini_task_show_all(void)
 		current = current->next;
 	}
 	printf("=====================\n");
+
+	mini_list_head_t *current_list = task_list_head.next;
+
+	printf("\n===== Task double linked List =====\n");
+
+	if (task_head == NULL) {
+		printf("No tasks\n");
+		printf("=====================\n");
+		return;
+	}
+
+	while (current_list != &task_list_head) {
+		mini_task_t *task = mini_container_of(current_list, mini_task_t, task_node);
+
+		printf("pid=%d, name=%s, state=%s, node=%p, prev=%p, next=%p\n",
+						task->pid,
+						task->name,
+						mini_task_state_to_string(task->state),
+						(void *)&task->task_node,
+						(void *)task->task_node.prev,
+						(void *)task->task_node.next);
+		current_list = current_list->next;
+	}
+
+	printf("=====================\n");
+
+	mini_list_show_raw(&task_list_head);
 }
 
 void mini_task_destroy_all(void)

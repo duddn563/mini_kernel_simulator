@@ -6,6 +6,12 @@
 
 #include <stdio.h>
 
+typedef struct mini_list_test_node {
+	int id;
+	char name[32];
+	mini_list_head_t list;
+} mini_list_test_node_t;
+
 static void timer_irq_handler(int irq)
 {
 	printf("[HANDLER] timer interrupt handler called: irq=%d\n", irq);
@@ -27,10 +33,22 @@ int main(void)
 	mini_file_operations_t *device_fops = NULL;
 	char read_buffer[MINI_DEVICE_BUFFER_SIZE];
 
+	mini_list_head_t test_list;
+	mini_list_head_t node1;
+	mini_list_head_t node2;
+	mini_list_head_t node3;
+	mini_list_head_t node4;
+
 	mini_printk_init();
 	mini_task_init();
 	mini_irq_init();
 	mini_device_init();
+
+	mini_init_list_head(&test_list);
+	mini_init_list_head(&node1);
+	mini_init_list_head(&node2);
+	mini_init_list_head(&node3);
+	mini_init_list_head(&node4);
 
   mini_printk(MINI_LOG_INFO, "mini kernel simulator start");
 	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk ring buffer");
@@ -69,8 +87,20 @@ int main(void)
 	device_fops->read(read_buffer, sizeof(read_buffer));
 	device_fops->close();
 
-	mini_printk_show_logs();
+	mini_printk(MINI_LOG_INFO, "mini_list test start");
 
+	mini_list_add_tail(&node1, &test_list);
+	mini_list_add_tail(&node2, &test_list);
+	mini_list_add_tail(&node3, &test_list);
+	mini_list_add_tail(&node4, &test_list);
+
+	mini_list_show_raw(&test_list);
+
+	mini_list_del(&node2);
+	 
+	mini_list_show_raw(&test_list);
+
+	mini_printk_show_logs();
 
 	mini_task_destroy_all();
 
