@@ -23,6 +23,7 @@ This project focuses on learning by building small versions of kernel concepts s
 * scheduler simulation
 * interrupt handler registration
 * character device operation structure
+* Linux kernel-style list_head
 
 ## Current Version
 
@@ -90,6 +91,20 @@ Implemented:
 * device open state check
 * device test flow in `main.c`
 
+### v0.6 mini_list
+
+Implemented:
+
+	- simplified circular doubly linked list
+	- `mini_list_head_t` structure
+	- list head self-initialization
+	- tail insertion using `mini_list_add_tail()`
+	- node deletion using `mini_list_del()`
+	- raw list traversal
+	- `mini_container_of()` experiment
+	- mini_task list_head integration
+
+
 ## Project Structure
 
 ```text
@@ -101,10 +116,12 @@ mini_kernel_simulator/
 │   ├── 02_mini_task.md
 │   ├── 03_mini_scheduler.md
 │   ├── 04_mini_irq.md
-│   └── 05_mini_device.md
+│   ├── 05_mini_device.md
+│   └── 06_mini_list.md
 ├── include
 │   ├── mini_device.h
 │   ├── mini_irq.h
+│   ├── mini_list.h
 │   ├── mini_printk.h
 │   ├── mini_scheduler.h
 │   └── mini_task.h
@@ -112,10 +129,10 @@ mini_kernel_simulator/
     ├── main.c
     ├── mini_device.c
     ├── mini_irq.c
+    ├── mini_list.c
     ├── mini_printk.c
     ├── mini_scheduler.c
     └── mini_task.c
-
 ```
 
 ## Build & Run
@@ -142,20 +159,30 @@ make clean
 
 ```text
 [INFO] mini_task initialized
+[INFO] mini_irq initialized
+[INFO] mini_device initialized
 [INFO] mini kernel simulator start
 [DEBUG] initializing mini_printk ring buffer
-[INFO] task created: pid=1, name=init, state=RUNNING
-[INFO] task created: pid=2, name=worker, state=READY
-[INFO] task created: pid=3, name=logger, state=SLEEPING
-[INFO] task added as head: pid=1, name=init
-[INFO] task added to list: pid=2, name=worker
-[INFO] task added to list: pid=3, name=logger
 
-===== Task List =====
-pid=1, name=init, state=RUNNING, next=0x106e588
-pid=2, name=worker, state=READY, next=0x106e5b8
-pid=3, name=logger, state=SLEEPING, next=(nil)
+===== Task double linked List =====
+pid=1, name=init, state=READY, node=0x1d7c584, prev=0x23a8c, next=0x1d7c5bc
+pid=2, name=worker, state=READY, node=0x1d7c5bc, prev=0x1d7c584, next=0x1d7c5f4
+pid=3, name=logger, state=READY, node=0x1d7c5f4, prev=0x1d7c5bc, next=0x23a8c
 =====================
+
+===== Scheduler Run =====
+[SCHED] running task: pid=1, name=init
+[SCHED] running task: pid=2, name=worker
+[SCHED] running task: pid=3, name=logger
+=========================
+
+[IRQ] triggered: irq=1, name=timer
+[HANDLER] timer interrupt handler called: irq=1
+
+[INFO] device opened
+[INFO] device write: hello mini device
+[INFO] device read: hello mini device
+[INFO] device closed
 ```
 
 The task list shows a simple linked list:
@@ -236,6 +263,23 @@ It supports:
 
 This module helps me understand the basic concept of Linux character device `file_operations`.
 
+
+### mini_list
+
+`mini_list` is a simplified Linux kernel-style circular doubly linked list module.
+
+It supports:
+
+* list head initialization
+* tail insertion
+* node deletion
+* empty list check
+* raw list traversal
+* container_of concept
+* embedded list node usage inside mini_task
+
+This module helps me understand how Linux kernel-style list_head works.
+
 ## Memory Layout Experiment
 
 For `mini_task_t`, I checked the structure size and member offsets.
@@ -264,6 +308,26 @@ This experiment helped me understand the difference between:
 * heap allocation layout
 * allocator alignment
 
+## list_head Experiment 
+
+Before mini_list, mini_task used a direct next pointer.
+
+	struct mini_task *next;
+
+After applying mini_list, each task contains an embedded list node.
+
+	mini_list_head_t task_node;
+
+The task list is now connected like this:
+
+	task_head <-> init.task_node <-> worker.task_node <-> logger.task_node <-> task_head
+
+When traversing the list, mini_container_of() is used to recover the parent mini_task_t structure from the list node address.
+
+Main concept:
+
+	list head + embedded list node + container_of = kernel-style linked list
+
 ## Documentation
 
 Detailed notes are available in the `docs/` directory.
@@ -274,6 +338,7 @@ docs/02_mini_task.md
 docs/03_mini_scheduler.md
 docs/04_mini_irq.md
 docs/05_mini_device.md
+docs/06_mini_list.md
 ```
 
 ## Roadmap
@@ -287,7 +352,10 @@ docs/05_mini_device.md
 * [x] implement round-robin scheduler
 * [x] implement interrupt handler table
 * [x] implement character device simulator
-* [ ] compare simple `next` pointer list with Linux kernel `list_head`
+* [x] compare simple `next` pointer list with Linux kernel `list_head`
+* [ ] refactor mini_scheduler to fully use list_head-based task traversal
+* [ ] improve scheduler to run only READY tasks
+* [ ] implement simple memory alloctor simulation
 
 ## Tech Stack
 
