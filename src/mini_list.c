@@ -1,6 +1,6 @@
 #include "mini_list.h"
-//#include "mini_task.h"
-//#include "mini_printk.h"
+
+#include "mini_printk.h"
 
 #include <stdio.h>
 

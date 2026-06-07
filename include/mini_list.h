@@ -1,8 +1,5 @@
 #ifndef MINI_LIST_H
-#define MINI_LISTH
-
-//#include "mini_task.h"
-#include "mini_printk.h"
+#define MINI_LIST_H
 
 #include <stddef.h>
 
