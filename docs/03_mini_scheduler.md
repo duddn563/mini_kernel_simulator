@@ -220,3 +220,83 @@ When it reaches the last task, it returns to the head task and continues running
 
 This helped me understand the basic structure of scheduler flow before studying the real Linux kernel scheduler.
 
+
+## v0.7 Refactor: list_head-based Scheduler
+
+In v0.7, `mini_scheduler` was refactored to use the `mini_list_head_t` based task queue.
+
+Before this refactor, the scheduler used a direct task pointer style.
+
+After applying `mini_list`, the scheduler now receives the task list head from `mini_task_get_head()`.
+
+    mini_scheduler_init(mini_task_get_head());
+
+The scheduler stores the ready queue head as:
+
+    static mini_list_head_t *scheduler_ready_queue_head = NULL;
+    static mini_list_head_t *scheduler_current_node = NULL;
+
+Each scheduler node is not a full `mini_task_t` structure.
+
+It is the address of `task_node` inside `mini_task_t`.
+
+To recover the parent task structure, the scheduler uses `mini_container_of()`.
+
+    task = mini_container_of(scheduler_current_node,
+                             mini_task_t,
+                             task_node);
+
+This means:
+
+    scheduler_current_node = address of task_node
+    task = parent mini_task_t structure
+
+## Runnable Task Check
+
+The scheduler now checks whether a task is runnable.
+
+    static int mini_scheduler_is_runnable(mini_task_t *task)
+    {
+        return task->state == MINI_TASK_READY;
+    }
+
+Only `READY` tasks are executed.
+
+Tasks in `SLEEPING` or `DONE` state are skipped.
+
+Example:
+
+    init    READY    -> run
+    worker  SLEEPING -> skip
+    logger  READY    -> run
+
+## Example Output
+
+    ===== Scheduler Run =====
+    [SCHED] running task: pid=1, name=init
+    [SCHED] skip task: pid=2, name=worker, state=SLEEPING
+    [SCHED] running task: pid=3, name=logger
+    [SCHED] running task: pid=1, name=init
+    [SCHED] skip task: pid=2, name=worker, state=SLEEPING
+    [SCHED] running task: pid=3, name=logger
+    =========================
+
+This confirms that the scheduler now uses the list_head-based task queue and runs only READY tasks.
+
+## What I Learned in v0.7
+
+Through this refactor, I learned:
+
+    1. how scheduler can traverse a list_head-based task queue
+    2. how to recover mini_task_t using container_of
+    3. how to skip non-runnable tasks
+    4. why scheduler logic should depend on task state
+    5. how mini_task, mini_list, and mini_scheduler work together
+
+## Summary
+
+The main concept of v0.7 is:
+
+    list_head task queue + container_of + READY state check = improved mini_scheduler
+
+This makes the scheduler closer to the Linux kernel-style task management structure.

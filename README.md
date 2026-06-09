@@ -105,6 +105,18 @@ Implemented:
 	- mini_task list_head integration
 
 
+### v0.7 - scheduler list_head refactor
+
+Implemented:
+
+- scheduler refactor using `mini_list_head_t`
+- list_head-based task queue traversal
+- task recovery using `mini_container_of()`
+- READY task execution
+- SLEEPING / DONE task skip logic
+- runnable task check
+- scheduler logging improvement
+
 ## Project Structure
 
 ```text
@@ -353,8 +365,8 @@ docs/06_mini_list.md
 * [x] implement interrupt handler table
 * [x] implement character device simulator
 * [x] compare simple `next` pointer list with Linux kernel `list_head`
-* [ ] refactor mini_scheduler to fully use list_head-based task traversal
-* [ ] improve scheduler to run only READY tasks
+* [x] refactor mini_scheduler to fully use list_head-based task traversal
+* [x] improve scheduler to run only READY tasks
 * [ ] implement simple memory alloctor simulation
 
 ## Tech Stack
