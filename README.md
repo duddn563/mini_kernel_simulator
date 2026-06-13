@@ -117,6 +117,20 @@ Implemented:
 - runnable task check
 - scheduler logging improvement
 
+### v0.8 - mini_memory
+
+Implemented:
+
+- fixed-size memory pool
+- eight 64-byte memory blocks
+- mini_memory_init()
+- mini_kmalloc()
+- mini_kfree()
+- allocation metadata tracking
+- invalid pointer and double-free checks
+- memory pool status output
+- released memory block reuse
+
 ## Project Structure
 
 ```text
@@ -129,11 +143,13 @@ mini_kernel_simulator/
 │   ├── 03_mini_scheduler.md
 │   ├── 04_mini_irq.md
 │   ├── 05_mini_device.md
-│   └── 06_mini_list.md
+│   ├── 06_mini_list.md
+│   └── 07_mini_memory.md
 ├── include
 │   ├── mini_device.h
 │   ├── mini_irq.h
 │   ├── mini_list.h
+│   ├── mini_memory.h
 │   ├── mini_printk.h
 │   ├── mini_scheduler.h
 │   └── mini_task.h
@@ -142,9 +158,11 @@ mini_kernel_simulator/
     ├── mini_device.c
     ├── mini_irq.c
     ├── mini_list.c
+    ├── mini_memory.c
     ├── mini_printk.c
     ├── mini_scheduler.c
     └── mini_task.c
+
 ```
 
 ## Build & Run
@@ -292,53 +310,16 @@ It supports:
 
 This module helps me understand how Linux kernel-style list_head works.
 
-## Memory Layout Experiment
+### mini_memory
 
-For `mini_task_t`, I checked the structure size and member offsets.
+`mini_memory` is a simplified Linux kernel-style memory pool module.
 
-```text
-sizeof(mini_task_t) = 44
-offset pid          = 0
-offset name         = 4
-offset state        = 36
-offset next         = 40
-```
+It supports:
 
-Array allocation result:
-
-```text
-diff 0->1 = 44
-diff 1->2 = 44
-```
-
-Heap allocation using `malloc()` showed that individually allocated task objects may be placed 48 bytes apart due to heap allocator alignment.
-
-This experiment helped me understand the difference between:
-
-* structure size
-* array layout
-* heap allocation layout
-* allocator alignment
-
-## list_head Experiment 
-
-Before mini_list, mini_task used a direct next pointer.
-
-	struct mini_task *next;
-
-After applying mini_list, each task contains an embedded list node.
-
-	mini_list_head_t task_node;
-
-The task list is now connected like this:
-
-	task_head <-> init.task_node <-> worker.task_node <-> logger.task_node <-> task_head
-
-When traversing the list, mini_container_of() is used to recover the parent mini_task_t structure from the list node address.
-
-Main concept:
-
-	list head + embedded list node + container_of = kernel-style linked list
+* memory pool initialize
+* memory metadata
+* kmalloc()
+* kfree()
 
 ## Documentation
 
@@ -351,6 +332,7 @@ docs/03_mini_scheduler.md
 docs/04_mini_irq.md
 docs/05_mini_device.md
 docs/06_mini_list.md
+docs/07_mini_memory.md
 ```
 
 ## Roadmap
@@ -367,7 +349,7 @@ docs/06_mini_list.md
 * [x] compare simple `next` pointer list with Linux kernel `list_head`
 * [x] refactor mini_scheduler to fully use list_head-based task traversal
 * [x] improve scheduler to run only READY tasks
-* [ ] implement simple memory alloctor simulation
+* [x] implement simple memory alloctor simulation
 
 ## Tech Stack
 
