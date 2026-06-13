@@ -8,7 +8,8 @@ SRC = src/main.c \
 			src/mini_scheduler.c	\
 			src/mini_irq.c	\
 			src/mini_device.c	\
-			src/mini_list.c
+			src/mini_list.c	\
+			src/mini_memory.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -23,5 +24,7 @@ $(TARGET): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(TARGET)
+
+.PHONY: all clean
 
 

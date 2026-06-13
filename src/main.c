@@ -3,8 +3,10 @@
 #include "mini_scheduler.h"
 #include "mini_irq.h"
 #include "mini_device.h"
+#include "mini_memory.h"
 
 #include <stdio.h>
+#include <string.h>
 
 typedef struct mini_list_test_node {
 	int id;
@@ -35,10 +37,16 @@ int main(void)
 	mini_list_head_t node3;
 	mini_list_head_t node4;
 
+	char *memory1 = NULL;
+	char *memory2 = NULL;
+	char *memory3 = NULL;
+	char *memory4 = NULL;
+
 	mini_printk_init();
 	mini_task_init();
 	mini_irq_init();
 	mini_device_init();
+	mini_memory_init();
 
 	mini_init_list_head(&test_list);
 	mini_init_list_head(&node1);
@@ -49,6 +57,9 @@ int main(void)
   mini_printk(MINI_LOG_INFO, "mini kernel simulator start");
 	mini_printk(MINI_LOG_DEBUG, "initializing mini_printk ring buffer");
 
+	/*
+	 * mini_task / mini_scheduler test
+	 */
 	mini_task_create(1, "init", MINI_TASK_READY);
 	mini_task_create(2, "worker", MINI_TASK_SLEEPING);
 	mini_task_create(3, "logger", MINI_TASK_READY);
@@ -58,6 +69,9 @@ int main(void)
 	mini_scheduler_init(mini_task_get_head());
 	mini_scheduler_run_rounds(6);
 
+	/*
+   * mini_irq test
+	 */
 	mini_request_irq(1, "timer", timer_irq_handler);
 	mini_request_irq(2, "keyboard", keyboard_irq_handler);
 
@@ -72,6 +86,9 @@ int main(void)
 
 	mini_irq_show_table();
 
+	/*
+   * mini_device test
+	 */
 	device_fops = mini_device_get_fops();
 
 	device_fops->open();
@@ -79,6 +96,10 @@ int main(void)
 	device_fops->read(read_buffer, sizeof(read_buffer));
 	device_fops->close();
 
+
+	/*
+	 * mini_list test
+	 */
 	mini_printk(MINI_LOG_INFO, "mini_list test start");
 
 	mini_list_add_tail(&node1, &test_list);
@@ -92,6 +113,100 @@ int main(void)
 	 
 	mini_list_show_raw(&test_list);
 
+	/*
+	 * mini_memory test
+	 */
+	mini_printk(
+		MINI_LOG_INFO,
+		"mini memory test start"
+	);
+
+	mini_memory_show_status();
+
+	memory1 = mini_kmalloc(16);
+	memory2 = mini_kmalloc(32);
+	memory3 = mini_kmalloc(64);
+
+	if (memory1 != NULL) {
+		strcpy(
+			memory1,
+			"memory block 1"
+		);
+	}
+
+	if (memory2 != NULL) {
+		strcpy(
+			memory2,
+			"memory block 2"
+		);
+	}
+
+	if (memory3 != NULL) {
+		strcpy(
+			memory3,
+			"memory block 3"
+		);
+	}
+
+	mini_printk(
+		MINI_LOG_INFO,
+		"memory1 data: %s",
+		memory1 != NULL ? memory1 : "NULL"
+	);
+
+	mini_printk(
+		MINI_LOG_INFO,
+		"memory2 data: %s",
+		memory2 != NULL ? memory2 : "NULL"
+	);
+	
+	mini_printk(
+		MINI_LOG_INFO,
+		"memory3 data: %s",
+		memory3 != NULL ? memory3 : "NULL"
+	);
+
+	mini_memory_show_status();
+
+	/*
+	 * 두 번쨰 블록 반납
+	 */
+	mini_kfree(memory2);
+	memory2 = NULL;
+
+	mini_memory_show_status();
+
+	/*
+	 * 반납된 블록이 다시 사용되는지확인 
+	 */
+	memory4 = mini_kmalloc(24);
+
+	if (memory4 != NULL) {
+		strcpy(memory4, "reused memory block");
+	}
+
+	mini_printk(
+		MINI_LOG_INFO,
+		"memory4 data: %s",
+		memory4 != NULL ? memory4 : "NULL"
+	);
+
+	mini_memory_show_status();
+
+	mini_kfree(memory1);
+	mini_kfree(memory3);
+	mini_kfree(memory4);
+
+	memory1 = NULL;
+	memory3 = NULL;
+	memory4 = NULL;
+
+	mini_memory_show_status();
+
+
+	/*
+	 * 모든 로그 출력 
+	 */
 	mini_printk_show_logs();
 
 	return 0;
