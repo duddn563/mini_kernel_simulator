@@ -4,6 +4,7 @@
 #include "mini_irq.h"
 #include "mini_device.h"
 #include "mini_memory.h"
+#include "mini_timer.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -24,6 +25,34 @@ static void keyboard_irq_handler(int irq)
 {
 	printf("[HANDLER] keyboard interrupt handler called: irq=%d\n", irq);
 	mini_printk(MINI_LOG_DEBUG, "keyboard irq handler executed: irq=%d", irq);
+}
+
+static void mini_timer_a_handler(const char *timer_name)
+{
+	printf(
+		"[HANDLER] %s handler run\n",
+		timer_name
+	);
+
+	mini_printk(
+		MINI_LOG_INFO,
+		"%s handler executed",
+		timer_name
+	);
+}
+
+static void mini_timer_b_handler(const char *timer_name)
+{
+	printf(
+		"[HANDLER] %s handler run\n",
+		timer_name
+	);
+	
+	mini_printk(
+		MINI_LOG_INFO,
+		"%s handler executed",
+		timer_name
+	);
 }
 
 int main(void)
@@ -47,6 +76,7 @@ int main(void)
 	mini_irq_init();
 	mini_device_init();
 	mini_memory_init();
+	mini_timer_init();
 
 	mini_init_list_head(&test_list);
 	mini_init_list_head(&node1);
@@ -202,6 +232,53 @@ int main(void)
 	memory4 = NULL;
 
 	mini_memory_show_status();
+
+	/*
+	 *	mini_timer test
+	 */
+	mini_printk(
+		MINI_LOG_INFO,
+		"mini_timer test start"
+	);
+
+	mini_timer_add(
+		"timer_a",
+		3,
+		mini_timer_a_handler
+	);
+
+	mini_timer_add(
+		"timer_b",
+		5,
+		mini_timer_b_handler
+	);
+
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	/*
+	 *	모든 로그 출력
+	 */
+
+	mini_timer_show_all();
+
 
 
 	/*

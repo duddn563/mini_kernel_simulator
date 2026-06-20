@@ -9,7 +9,8 @@ SRC = src/main.c \
 			src/mini_irq.c	\
 			src/mini_device.c	\
 			src/mini_list.c	\
-			src/mini_memory.c
+			src/mini_memory.c	\
+			src/mini_timer.c
 
 OBJ = $(SRC:.c=.o)
 
