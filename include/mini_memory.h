@@ -1,10 +1,10 @@
 #ifndef MINI_MEMORY_H
 #define MINI_MEMORY_H
 
-#include <stddef.h>
-
 #define MINI_MEMORY_BLOCK_SIZE 64
 #define MINI_MEMORY_BLOCK_COUNT 8
+
+#include <stdio.h>
 
 void mini_memory_init(void);
 void *mini_kmalloc(size_t size);
