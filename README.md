@@ -131,6 +131,20 @@ Implemented:
 - memory pool status output
 - released memory block reuse
 
+### v0.9 - mini_timer
+
+Implemented:
+
+- static timer table
+- 8 timer slots
+- global tick count
+- timer registration using `mini_timer_add()`
+- expiration tick calculation
+- tick increment using `mini_timer_tick()`
+- handler execution when a timer expires
+- one-slot timer disable logic
+- timer table status output
+
 ## Project Structure
 
 ```text
@@ -321,6 +335,20 @@ It supports:
 * kmalloc()
 * kfree()
 
+### mini_timer
+
+`mini_timer` is a simplified timer module.
+
+It supports:
+
+- timer registration
+- current tick count tracking
+- expiration tick calculation
+- expired timer checking
+- handler execution using function pointers
+- timer disable after execution
+- timer table output
+
 ## Documentation
 
 Detailed notes are available in the `docs/` directory.
@@ -350,6 +378,7 @@ docs/07_mini_memory.md
 * [x] refactor mini_scheduler to fully use list_head-based task traversal
 * [x] improve scheduler to run only READY tasks
 * [x] implement simple memory alloctor simulation
+* [x] implement mini_timer module
 
 ## Tech Stack
 
