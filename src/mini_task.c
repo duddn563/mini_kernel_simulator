@@ -25,7 +25,11 @@ const char *mini_task_state_to_string(mini_task_state_t state)
 void mini_task_init(void)
 {
 	mini_init_list_head(&task_list_head);
-	mini_printk(MINI_LOG_INFO, "mini_task initialized");
+
+	mini_printk(
+			MINI_LOG_INFO, 
+			"mini_task initialized"
+	);
 }
 
 mini_task_t *mini_task_create(int pid, const char *name, mini_task_state_t state)
@@ -34,23 +38,95 @@ mini_task_t *mini_task_create(int pid, const char *name, mini_task_state_t state
 
 	new_task = (mini_task_t *)malloc(sizeof(mini_task_t));
 	if (new_task == NULL) {
-		mini_printk(MINI_LOG_ERROR, "failed to allocate memory for task");
+		mini_printk(
+				MINI_LOG_ERROR, 
+				"failed to allocate memory for task"
+		);
+
 		return NULL;
 	}
 
 	new_task->pid = pid;
-	snprintf(new_task->name, MINI_TASK_NAME_SIZE, "%s", name);
+
+	snprintf(
+			new_task->name, 
+			MINI_TASK_NAME_SIZE,
+			"%s", 
+			name
+	);
+
 	new_task->state = state;
 
-	mini_list_add_tail(&new_task->task_node, &task_list_head);
+	mini_init_list_head(
+			&new_task->task_node
+	);
 
-	mini_printk(MINI_LOG_INFO, 
-							"task created: pid=%d, name=%s, state=%s",
-							new_task->pid,
-							new_task->name,
-							mini_task_state_to_string(new_task->state));
+	mini_list_add_tail(
+			&new_task->task_node, 
+			&task_list_head
+	);
+
+	mini_printk(
+			MINI_LOG_INFO, 
+			"task created: pid=%d, name=%s, state=%s",
+			new_task->pid,
+			new_task->name,
+			mini_task_state_to_string(new_task->state)
+	);
 
 	return new_task;
+}
+
+mini_task_t *mini_task_find_by_pid(int pid)
+{
+	mini_list_head_t *current_list = task_list_head.next;
+
+	while (current_list != &task_list_head) {
+			mini_task_t *task = mini_container_of(
+					current_list,
+					mini_task_t,
+					task_node
+			);
+
+			if (task->pid == pid) {
+					return task;
+			}
+
+			current_list = current_list->next;
+	}
+
+	return NULL;
+}
+
+int mini_task_set_state(int pid, mini_task_state_t state)
+{
+		mini_task_t *task = NULL;
+		mini_task_state_t old_state;
+
+		task = mini_task_find_by_pid(pid);
+		if (task == NULL) {
+				mini_printk(
+						MINI_LOG_ERROR,
+						"task state change failed: pid=%d not found",
+						pid
+				);
+
+				return -1;
+		}
+
+		old_state = task->state;
+		task->state = state;
+
+		mini_printk(
+				MINI_LOG_INFO,
+				"task state changed: pid=%d, name=%s, %s->%s",
+				task->pid,
+				task->name,
+				mini_task_state_to_string(old_state),
+				mini_task_state_to_string(task->state)
+		);
+
+		return 0;
 }
 
 void mini_task_show_all(void)
@@ -66,7 +142,11 @@ void mini_task_show_all(void)
 	}
 
 	while (current_list != &task_list_head) {
-		mini_task_t *task = mini_container_of(current_list, mini_task_t, task_node);
+		mini_task_t *task = mini_container_of(
+				current_list, 
+				mini_task_t, 
+				task_node
+		);
 
 		printf("pid=%d, name=%s, state=%s, node=%p, prev=%p, next=%p\n",
 						task->pid,
@@ -74,7 +154,9 @@ void mini_task_show_all(void)
 						mini_task_state_to_string(task->state),
 						(void *)&task->task_node,
 						(void *)task->task_node.prev,
-						(void *)task->task_node.next);
+						(void *)task->task_node.next
+		);
+
 		current_list = current_list->next;
 	}
 

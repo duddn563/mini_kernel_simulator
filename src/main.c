@@ -55,6 +55,25 @@ static void mini_timer_b_handler(const char *timer_name)
 	);
 }
 
+static void mini_wakeup_worker_handler(const char *timer_name)
+{
+	printf(
+			"[HANDLER] %s handler run: wake up worker task\n",
+			timer_name
+	);
+
+	mini_printk(
+			MINI_LOG_INFO,
+			"%s handler executed: wake up worker task",
+			timer_name
+	);
+
+	mini_task_set_state(
+			2,
+			MINI_TASK_READY
+	);
+}
+
 int main(void)
 {
 	mini_file_operations_t *device_fops = NULL;
@@ -273,6 +292,45 @@ int main(void)
 	mini_timer_tick();
 	mini_timer_show_all();
 
+	/*
+	 *	mini_sleep / timer wake-up test
+	 */
+	mini_printk(
+			MINI_LOG_INFO,
+			"mini_sleep wake-up test start"
+	);
+
+	mini_task_set_state(
+			2,
+			MINI_TASK_SLEEPING
+	);
+
+	printf("\n===== Before wake-up timer =====\n");
+	mini_task_show_all();
+
+	mini_scheduler_run_rounds(3);
+
+	mini_timer_add(
+			"wake_worker",
+			3,
+			mini_wakeup_worker_handler
+	);
+
+	mini_task_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+
+	mini_timer_tick();
+	mini_timer_show_all();
+	
+	printf("\n===== After wake-up timer =====\n");
+	mini_task_show_all();
+
+	mini_scheduler_run_rounds(6);
 	/*
 	 *	모든 로그 출력
 	 */
